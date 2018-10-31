@@ -1,28 +1,52 @@
 {
-  "name": "@constantiner/log4js",
-  "version": "0.0.1",
-  "description": "Modular implementation of log4j for JavaScript to use in browsers",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Constantiner/log4js.git"
-  },
-  "keywords": [
-    "log4j",
-    "log4js",
-    "log4javascript",
-    "logging"
-  ],
-  "author": {
-	  "name": "Konstantin Kovalev",
-	  "email": "constantiner@gmail.com"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Constantiner/log4js/issues"
-  },
-  "homepage": "https://github.com/Constantiner/log4js#readme"
+	"name": "@constantiner/log4js",
+	"version": "0.0.1",
+	"description": "Modular implementation of log4j for JavaScript to use in browsers",
+	"main": "index.js",
+	"scripts": {
+		"test": "npx jest --config jest.config.json",
+		"lint": "npx eslint '**/*.js'",
+		"format": "npx prettier 'src/*.js' '__tests__/*.js' --write",
+		"clear_jest": "npx jest --clearCache"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Constantiner/log4js.git"
+	},
+	"keywords": [
+		"log4j",
+		"log4js",
+		"log4javascript",
+		"logging"
+	],
+	"author": {
+		"name": "Konstantin Kovalev",
+		"email": "constantiner@gmail.com"
+	},
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Constantiner/log4js/issues"
+	},
+	"homepage": "https://github.com/Constantiner/log4js#readme",
+	"prettier": {
+		"printWidth": 120,
+		"useTabs": true,
+		"tabWidth": 4
+	},
+	"engines": {
+		"node": ">=7.6",
+		"npm": ">=5.2.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.1.2",
+		"@types/jest": "^23.3.9",
+		"babel-core": "^7.0.0-bridge.0",
+		"babel-jest": "^23.6.0",
+		"eslint": "^5.8.0",
+		"eslint-config-prettier": "^3.1.0",
+		"jest": "^23.6.0",
+		"jest-pnp-resolver": "^1.0.1",
+		"prettier": "^1.14.3",
+		"regenerator-runtime": "^0.12.1"
+	}
 }
