@@ -1,0 +1,28 @@
+{
+  "name": "@constantiner/log4js",
+  "version": "0.0.1",
+  "description": "Modular implementation of log4j for JavaScript to use in browsers",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Constantiner/log4js.git"
+  },
+  "keywords": [
+    "log4j",
+    "log4js",
+    "log4javascript",
+    "logging"
+  ],
+  "author": {
+	  "name": "Konstantin Kovalev",
+	  "email": "constantiner@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Constantiner/log4js/issues"
+  },
+  "homepage": "https://github.com/Constantiner/log4js#readme"
+}
