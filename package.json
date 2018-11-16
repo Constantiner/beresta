@@ -38,15 +38,16 @@
 		"npm": ">=5.2.0"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.1.2",
+		"@babel/core": "^7.1.6",
+		"@babel/preset-env": "^7.1.6",
 		"@types/jest": "^23.3.9",
 		"babel-core": "^7.0.0-bridge.0",
 		"babel-jest": "^23.6.0",
-		"eslint": "^5.8.0",
-		"eslint-config-prettier": "^3.1.0",
+		"eslint": "^5.9.0",
+		"eslint-config-prettier": "^3.3.0",
 		"jest": "^23.6.0",
-		"jest-pnp-resolver": "^1.0.1",
-		"prettier": "^1.14.3",
+		"jest-pnp-resolver": "^1.0.2",
+		"prettier": "^1.15.2",
 		"regenerator-runtime": "^0.12.1"
 	}
 }
