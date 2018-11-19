@@ -1,2 +1,2 @@
-# log4js
-Modular implementation of log4j for JavaScript to use in browsers
+# beresta
+A minimalistic logging library for JavaScript to use in browsers or in Node.js.
