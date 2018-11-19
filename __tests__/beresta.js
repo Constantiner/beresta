@@ -7,17 +7,17 @@ const resetModules = () => {
 	const getDateNow = () => dateNow;
 	const dateUtil = require("../src/util/dateUtil");
 	dateUtil.getNow = getDateNow;
-	const log4js = require("../src/log4js");
-	ALL = log4js.ALL;
-	TRACE = log4js.TRACE;
-	DEBUG = log4js.DEBUG;
-	INFO = log4js.INFO;
-	WARN = log4js.WARN;
-	ERROR = log4js.ERROR;
-	FATAL = log4js.FATAL;
-	OFF = log4js.OFF;
-	getLogger = log4js.getLogger;
-	getRootLogger = log4js.getRootLogger;
+	const beresta = require("../src/beresta");
+	ALL = beresta.ALL;
+	TRACE = beresta.TRACE;
+	DEBUG = beresta.DEBUG;
+	INFO = beresta.INFO;
+	WARN = beresta.WARN;
+	ERROR = beresta.ERROR;
+	FATAL = beresta.FATAL;
+	OFF = beresta.OFF;
+	getLogger = beresta.getLogger;
+	getRootLogger = beresta.getRootLogger;
 };
 describe("Integration tests for is level enabled", () => {
 	const checkEnabled = (

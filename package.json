@@ -1,5 +1,5 @@
 {
-	"name": "@constantiner/log4js",
+	"name": "@constantiner/beresta",
 	"version": "0.0.1",
 	"description": "Modular implementation of log4j for JavaScript to use in browsers",
 	"main": "index.js",
@@ -12,11 +12,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Constantiner/log4js.git"
+		"url": "git+https://github.com/Constantiner/beresta.git"
 	},
 	"keywords": [
 		"log4j",
-		"log4js",
+		"beresta",
 		"log4javascript",
 		"logging"
 	],
@@ -26,9 +26,9 @@
 	},
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/Constantiner/log4js/issues"
+		"url": "https://github.com/Constantiner/beresta/issues"
 	},
-	"homepage": "https://github.com/Constantiner/log4js#readme",
+	"homepage": "https://github.com/Constantiner/beresta#readme",
 	"prettier": {
 		"printWidth": 120,
 		"useTabs": true,
