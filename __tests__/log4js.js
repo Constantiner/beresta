@@ -108,11 +108,105 @@ describe("Integration tests for logging", () => {
 		expect(appender).not.toBeCalled();
 	});
 	it("should be called for nested logger", () => {
-		getRootLogger().setLevel(DEBUG);
 		const appender = getMockFn(jest)(() => null, "appender");
-		const logger = getLogger("test.test/test").setAppender(appender);
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(appender);
+		const logger = getLogger("test.test/test");
 		logger.debug("first", "second");
 		expect(appender).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(appender, 1, "DEBUG", dateNow, "test.test.test", "first", "second");
+	});
+	it("should be called for explicit appender for nested logger", () => {
+		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(rootAppender);
+		const appender = getMockFn(jest)(() => null, "appender");
+		const logger = getLogger("test.test.test").setAppender(appender);
+		logger.debug("first", "second");
+		expect(appender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(appender, 1, "DEBUG", dateNow, "test.test.test", "first", "second");
+		expect(rootAppender).not.toBeCalled();
+	});
+	it("should be called for nested logger of explicit appender for nested logger", () => {
+		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(rootAppender);
+		const appender = getMockFn(jest)(() => null, "appender");
+		getLogger("test.test.test").setAppender(appender);
+		getLogger("test.test.test.first").debug("first", "second");
+		expect(appender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(appender, 1, "DEBUG", dateNow, "test.test.test.first", "first", "second");
+		expect(rootAppender).not.toBeCalled();
+	});
+	it("should not be called for nested logger of explicit appender for nested logger", () => {
+		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(rootAppender);
+		const appender = getMockFn(jest)(() => null, "appender");
+		getLogger("test.test.test").setAppender(appender);
+		getLogger("test.test.test.first").setLevel(OFF);
+		getLogger("test.test.test.first.second").debug("first", "second");
+		expect(appender).not.toBeCalled();
+		expect(rootAppender).not.toBeCalled();
+	});
+	it("should be called for nested logger of explicit appender for nested logger with level", () => {
+		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(rootAppender);
+		const appender = getMockFn(jest)(() => null, "appender");
+		getLogger("test.test.test").setAppender(appender);
+		getLogger("test.test.test.first").setLevel(WARN);
+		getLogger("test.test.test.first.second").error("first", "second");
+		expect(appender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(appender, 1, "ERROR", dateNow, "test.test.test.first.second", "first", "second");
+		expect(rootAppender).not.toBeCalled();
+	});
+	it("should perform complex test", () => {
+		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
+		const rootLogger = getRootLogger()
+			.setLevel(FATAL)
+			.setAppender(rootAppender);
+		const testAppender = getMockFn(jest)(() => null, "testAppender");
+		const testLogger = getLogger("test").setAppender(testAppender);
+		const testTestLogger = getLogger("test.test").setLevel(ERROR);
+		const testTestTestAppender = getMockFn(jest)(() => null, "testTestTestAppender");
+		const testTestTestLogger = getLogger("test.test.test")
+			.setLevel(ALL)
+			.setAppender(testTestTestAppender);
+		getLogger("test.test.test.first").setLevel(OFF);
+		const testTestTestFirstTestLogger = getLogger("test.test.test.first.test");
+		const testTestTestFirstSecondAppender = getMockFn(jest)(() => null, "testTestTestFirstSecondAppender");
+		getLogger("test.test.test.first.second")
+			.setLevel(TRACE)
+			.setAppender(testTestTestFirstSecondAppender);
+		const testTestTestFirstSecondTestLogger = getLogger("test.test.test.first.second.test");
+
+		rootLogger.debug("first", "second");
+		rootLogger.fatal("first", "second", "third");
+		testLogger.error("second", "first");
+		testTestLogger.error("third", "second", "first");
+		testTestTestLogger.trace("second");
+		testTestTestFirstTestLogger.fatal("nothing");
+		testTestTestFirstSecondTestLogger.trace("everything");
+		expect(rootAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(rootAppender, 1, "FATAL", dateNow, "", "first", "second", "third");
+		expect(testAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(testAppender, 1, "ERROR", dateNow, "test.test", "third", "second", "first");
+		expect(testTestTestAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(testTestTestAppender, 1, "TRACE", dateNow, "test.test.test", "second");
+		expect(testTestTestFirstSecondAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(
+			testTestTestFirstSecondAppender,
+			1,
+			"TRACE",
+			dateNow,
+			"test.test.test.first.second.test",
+			"everything"
+		);
 	});
 });
