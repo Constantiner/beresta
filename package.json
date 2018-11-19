@@ -5,9 +5,10 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "npx jest --config jest.config.json",
-		"lint": "npx eslint '**/*.js'",
+		"lint": "npx eslint '**/*.js' --fix",
 		"format": "npx prettier 'src/*.js' '__tests__/*.js' --write",
-		"clear_jest": "npx jest --clearCache"
+		"clear_jest": "npx jest --clearCache",
+		"lint-staged": "lint-staged"
 	},
 	"repository": {
 		"type": "git",
@@ -45,8 +46,10 @@
 		"babel-jest": "^23.6.0",
 		"eslint": "^5.9.0",
 		"eslint-config-prettier": "^3.3.0",
+		"husky": "^1.1.4",
 		"jest": "^23.6.0",
 		"jest-pnp-resolver": "^1.0.2",
+		"lint-staged": "^8.0.5",
 		"prettier": "^1.15.2",
 		"regenerator-runtime": "^0.13.1"
 	}
