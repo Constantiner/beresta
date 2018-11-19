@@ -1,8 +1,8 @@
 {
 	"name": "@constantiner/beresta",
 	"version": "0.0.1",
-	"description": "Modular implementation of log4j for JavaScript to use in browsers",
-	"main": "index.js",
+	"description": "A minimalists logging library for JavaScript to use in browsers or in Node.js",
+	"main": "beresta.js",
 	"scripts": {
 		"test": "npx jest --config jest.config.json",
 		"lint": "npx eslint '**/*.js' --fix",
@@ -16,9 +16,10 @@
 	},
 	"keywords": [
 		"log4j",
-		"beresta",
+		"log4js",
 		"log4javascript",
-		"logging"
+		"logging",
+		"JavaScript"
 	],
 	"author": {
 		"name": "Konstantin Kovalev",
