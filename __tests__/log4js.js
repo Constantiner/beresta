@@ -80,26 +80,32 @@ describe("Integration tests for is level enabled", () => {
 	});
 	it("should perform complex test", () => {
 		const rootLogger = getRootLogger().setLevel(FATAL);
-		const testTestLogger = getLogger("test.test").setLevel(ERROR);
-		const testTestTestLogger = getLogger("test.test.test").setLevel(ALL);
-		getLogger("test.test.test.first").setLevel(OFF);
-		const testTestTestFirstTestLogger = getLogger("test.test.test.first.test");
-		getLogger("test.test.test.first.second").setLevel(TRACE);
-		const testTestTestFirstSecondTestLogger = getLogger("test.test.test.first.second.test");
+		const testTestTestLogger = getLogger("test.test.test").setLevel(ERROR);
+		const testTestTestTestLogger = getLogger("test.test.test.test").setLevel(ALL);
+		getLogger("test.test.test.test.first").setLevel(OFF);
+		const testTestTestTestFirstTestLogger = getLogger("test.test.test.test.first.test");
+		getLogger("test.test.test.test.first.second").setLevel(TRACE);
+		const testTestTestTestFirstSecondTestLogger = getLogger("test.test.test.test.first.second.test");
 		checkEnabled(rootLogger, false, false, false, false, false, true);
-		checkEnabled(testTestLogger, false, false, false, false, true, true);
-		checkEnabled(testTestTestLogger, true, true, true, true, true, true);
-		checkEnabled(testTestTestFirstTestLogger, false, false, false, false, false, false);
-		checkEnabled(testTestTestFirstSecondTestLogger, true, true, true, true, true, true);
-		getLogger("test.test.test.first").setLevel(INFO);
+		checkEnabled(testTestTestLogger, false, false, false, false, true, true);
+		checkEnabled(testTestTestTestLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestTestFirstTestLogger, false, false, false, false, false, false);
+		checkEnabled(testTestTestTestFirstSecondTestLogger, true, true, true, true, true, true);
+		getLogger("test.test.test.test.first").setLevel(INFO);
 		checkEnabled(rootLogger, false, false, false, false, false, true);
-		checkEnabled(testTestLogger, false, false, false, false, true, true);
-		checkEnabled(testTestTestLogger, true, true, true, true, true, true);
-		checkEnabled(testTestTestFirstTestLogger, false, false, true, true, true, true);
-		checkEnabled(testTestTestFirstSecondTestLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestLogger, false, false, false, false, true, true);
+		checkEnabled(testTestTestTestLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestTestFirstTestLogger, false, false, true, true, true, true);
+		checkEnabled(testTestTestTestFirstSecondTestLogger, true, true, true, true, true, true);
+		rootLogger.setLevel(ALL);
+		checkEnabled(rootLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestLogger, false, false, false, false, true, true);
+		checkEnabled(testTestTestTestLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestTestFirstTestLogger, false, false, true, true, true, true);
+		checkEnabled(testTestTestTestFirstSecondTestLogger, true, true, true, true, true, true);
 	});
 });
-describe("Integration tests for logging", () => {
+describe("Integration tests for appenders", () => {
 	beforeEach(resetModules);
 	it("should not log anything by default", () => {
 		const appender = getMockFn(jest)(() => null, "appender");
@@ -185,6 +191,8 @@ describe("Integration tests for logging", () => {
 			.setLevel(TRACE)
 			.setAppender(testTestTestFirstSecondAppender);
 		const testTestTestFirstSecondTestLogger = getLogger("test.test.test.first.second.test");
+		const testTestTestAppender2 = getMockFn(jest)(() => null, "testTestTestAppender2");
+		const rootAppender2 = getMockFn(jest)(() => null, "rootAppender2");
 
 		rootLogger.debug("first", "second");
 		rootLogger.fatal("first", "second", "third");
@@ -208,5 +216,59 @@ describe("Integration tests for logging", () => {
 			"test.test.test.first.second.test",
 			"everything"
 		);
+		expect(testTestTestAppender2).not.toBeCalled();
+		expect(rootAppender2).not.toBeCalled();
+
+		rootAppender.mockClear();
+		testAppender.mockClear();
+		testTestTestAppender2.mockClear();
+		testTestTestFirstSecondAppender.mockClear();
+		testTestTestAppender.mockClear();
+		rootAppender2.mockClear();
+
+		testTestTestLogger.setAppender(testTestTestAppender2);
+		rootLogger.setAppender(rootAppender2);
+		rootLogger.debug("first", "second");
+		rootLogger.fatal("first", "second", "third");
+		testLogger.error("second", "first");
+		testTestLogger.error("third", "second", "first");
+		testTestTestLogger.trace("second");
+		testTestTestFirstTestLogger.fatal("nothing");
+		testTestTestFirstSecondTestLogger.trace("everything");
+		expect(rootAppender2).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(rootAppender2, 1, "FATAL", dateNow, "", "first", "second", "third");
+		expect(testAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(testAppender, 1, "ERROR", dateNow, "test.test", "third", "second", "first");
+		expect(testTestTestAppender2).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(testTestTestAppender2, 1, "TRACE", dateNow, "test.test.test", "second");
+		expect(testTestTestFirstSecondAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(
+			testTestTestFirstSecondAppender,
+			1,
+			"TRACE",
+			dateNow,
+			"test.test.test.first.second.test",
+			"everything"
+		);
+		expect(testTestTestAppender).not.toBeCalled();
+		expect(rootAppender).not.toBeCalled();
+	});
+});
+describe("General integration tests", () => {
+	beforeEach(resetModules);
+	it("should not accept invalid levels", () => {
+		const invalidLevel = "ERROR";
+		try {
+			getLogger("test.test.test").setLevel(invalidLevel);
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid level ${invalidLevel}`);
+		}
+	});
+	it("should work fine without appenders", () => {
+		const rootLogger = getRootLogger().setLevel(ALL);
+		const logger = rootLogger.debug("test");
+		expect(logger).toBe(rootLogger);
 	});
 });

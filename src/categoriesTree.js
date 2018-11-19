@@ -19,13 +19,13 @@ const initTree = (rootCategory, rootLoggerDescription) => {
 
 const getCategoryBreadcrumbs = category => category.split(".");
 
-const resolveLevelsAndAppendersForNode = (node, levelResolved = false, appenderResolved = false) => {
+const resolveLevelsAndAppendersForNode = (node, levelResolved, appenderResolved) => {
 	if (levelResolved && appenderResolved) {
 		return;
 	}
 	[...node.children.values()].forEach(subNode => {
 		let subLevelResolved = levelResolved;
-		if (!subLevelResolved && subNode.loggerDescription) {
+		if (!subLevelResolved) {
 			if (subNode.loggerDescription.level) {
 				subLevelResolved = true;
 			} else {
@@ -34,7 +34,7 @@ const resolveLevelsAndAppendersForNode = (node, levelResolved = false, appenderR
 			}
 		}
 		let subAppenderResolved = appenderResolved;
-		if (!subAppenderResolved && subNode.loggerDescription) {
+		if (!subAppenderResolved) {
 			if (subNode.loggerDescription.appender) {
 				subAppenderResolved = true;
 			} else {
@@ -46,7 +46,7 @@ const resolveLevelsAndAppendersForNode = (node, levelResolved = false, appenderR
 	});
 };
 
-const getNode = (category, isRootNode = false) => {
+const getNode = (category, isRootNode) => {
 	if (isRootNode) {
 		return tree;
 	}
@@ -54,7 +54,7 @@ const getNode = (category, isRootNode = false) => {
 	return categoryBreadcrumbs.reduce((currentNode, part) => currentNode.children.get(part), tree);
 };
 
-const addLoggerToHierarchy = (category, loggerDescription, isRoot = false) => {
+const addLoggerToHierarchy = (category, loggerDescription, isRoot) => {
 	let node = isRoot
 		? tree
 		: getCategoryBreadcrumbs(category).reduce(
@@ -72,21 +72,10 @@ const addLoggerToHierarchy = (category, loggerDescription, isRoot = false) => {
 						node = createTreeNode(part, name, currentNode, loggerDescription);
 					} else {
 						const loggerDescription = node.loggerDescription;
-						if (!loggerDescription) {
-							const loggerDescription = {
-								levelDerived:
-									currentNode.loggerDescription.level || currentNode.loggerDescription.levelDerived,
-								appenderDerived:
-									currentNode.loggerDescription.appender ||
-									currentNode.loggerDescription.appenderDerived
-							};
-							node.loggerDescription = loggerDescription;
-						} else {
-							loggerDescription.levelDerived =
-								currentNode.loggerDescription.level || currentNode.loggerDescription.levelDerived;
-							loggerDescription.appenderDerived =
-								currentNode.loggerDescription.appender || currentNode.loggerDescription.appenderDerived;
-						}
+						loggerDescription.levelDerived =
+							currentNode.loggerDescription.level || currentNode.loggerDescription.levelDerived;
+						loggerDescription.appenderDerived =
+							currentNode.loggerDescription.appender || currentNode.loggerDescription.appenderDerived;
 					}
 					return { currentNode: node, currentPath: newPath };
 				},
@@ -99,7 +88,7 @@ const addLoggerToHierarchy = (category, loggerDescription, isRoot = false) => {
 	resolveLevelsAndAppendersForNode(node);
 };
 
-const updateAppenderOrLevel = (category, isRoot = false) => {
+const updateAppenderOrLevel = (category, isRoot) => {
 	const node = getNode(category, isRoot);
 	resolveLevelsAndAppendersForNode(node);
 };

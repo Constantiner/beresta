@@ -15,22 +15,16 @@ const resolveRootCategory = category => category || ROOT_CATEGORY;
 
 const normalizeCategory = category => resolveRootCategory(category).replace(/[\\/]/, ".");
 
-const setObjectProperty = (object, propName, propValue) => {
-	if (propValue) {
-		object[propName] = propValue;
-	}
-	return object;
-};
-const createLoggerDescription = (originalLoggerDescription, logger, level, appender) => {
-	const loggerDescription = setObjectProperty(setObjectProperty({ logger }, "level", level), "appender", appender);
+const createLoggerDescription = (originalLoggerDescription, logger) => {
+	const loggerDescription = { logger };
 	if (originalLoggerDescription) {
 		return Object.assign(originalLoggerDescription, loggerDescription);
 	}
 	return loggerDescription;
 };
 
-const registerLogger = (category, logger, level, appender) => {
-	const loggerDescription = createLoggerDescription(categories.get(category), logger, level, appender);
+const registerLogger = (category, logger) => {
+	const loggerDescription = createLoggerDescription(categories.get(category), logger);
 	categories.set(category, loggerDescription);
 	addLoggerToHierarchy(category, loggerDescription, category === ROOT_CATEGORY);
 	return category;
@@ -45,34 +39,24 @@ const getLogger = category => {
 
 const setAppender = (category, appender) => {
 	const loggerDescription = categories.get(category);
-	if (loggerDescription) {
-		loggerDescription.appender = appender;
-	}
+	loggerDescription.appender = appender;
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
 const setLevel = (category, level) => {
 	const loggerDescription = categories.get(category);
-	if (loggerDescription) {
-		loggerDescription.level = level;
-	}
+	loggerDescription.level = level;
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
 const isLevelEnabled = (level, category) => {
 	const loggerDescription = categories.get(category);
-	if (!loggerDescription) {
-		return false;
-	}
 	const effectiveLevel = loggerDescription.level || loggerDescription.levelDerived;
 	return mayUseLevel(level, effectiveLevel);
 };
 
 const log = (level, category, ...args) => {
 	const loggerDescription = categories.get(category);
-	if (!loggerDescription) {
-		return;
-	}
 	const logger = loggerDescription.logger;
 	if (!isLevelEnabled(level, category)) {
 		return logger;
