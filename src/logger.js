@@ -1,4 +1,5 @@
 import {
+	clearLevel,
 	getLogger as getExistingLogger,
 	isLevelEnabled as isRequestedLevelEnabled,
 	log as performLog,
@@ -43,10 +44,19 @@ const configureSetLevel = (logger, category) => (
 	logger
 );
 
+const configureClearLevel = (logger, category) => (
+	(logger.clearLevel = function _clearLevel() {
+		clearLevel(category);
+		return logger;
+	}),
+	logger
+);
+
 const createLogger = (category, getLoggerFunction) => {
 	const logger = makeBaseLogger(category);
 	configureSetAppender(logger, category);
 	configureSetLevel(logger, category);
+	configureClearLevel(logger, category);
 	logger.getLogger = getLoggerFunction;
 	logger.getRootLogger = () => getLoggerFunction();
 	return registerLogger(category, logger);

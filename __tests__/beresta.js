@@ -123,6 +123,18 @@ describe("Integration tests for is level enabled", () => {
 		checkEnabled(testTestTestTestLogger, true, true, true, true, true, true);
 		checkEnabled(testTestTestTestFirstTestLogger, false, false, true, true, true, true);
 		checkEnabled(testTestTestTestFirstSecondTestLogger, true, true, true, true, true, true);
+		rootLogger.clearLevel();
+		checkEnabled(rootLogger, false, false, false, false, false, false);
+		checkEnabled(testTestTestLogger, false, false, false, false, true, true);
+		checkEnabled(testTestTestTestLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestTestFirstTestLogger, false, false, true, true, true, true);
+		checkEnabled(testTestTestTestFirstSecondTestLogger, true, true, true, true, true, true);
+		testTestTestLogger.clearLevel();
+		checkEnabled(rootLogger, false, false, false, false, false, false);
+		checkEnabled(testTestTestLogger, false, false, false, false, false, false);
+		checkEnabled(testTestTestTestLogger, true, true, true, true, true, true);
+		checkEnabled(testTestTestTestFirstTestLogger, false, false, true, true, true, true);
+		checkEnabled(testTestTestTestFirstSecondTestLogger, true, true, true, true, true, true);
 	});
 });
 describe("Integration tests for appenders", () => {
@@ -348,5 +360,50 @@ describe("General integration tests", () => {
 		const rootLogger = getRootLogger().setLevel(ALL);
 		const logger = rootLogger.debug("test");
 		expect(logger).toBe(rootLogger);
+	});
+	it("should return the same logger for setLevel", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").setLevel(INFO);
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for clearLevel", () => {
+		const logger = getLogger("1.2.3").setLevel(TRACE);
+		const anotherLogger = getLogger("1.2.3").clearLevel();
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for setAppender", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").setAppender(() => {});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for trace", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").trace({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for debug", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").debug({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for info", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").info({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for warn", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").warn({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for error", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").error({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for fatal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").fatal({});
+		expect(logger).toBe(anotherLogger);
 	});
 });

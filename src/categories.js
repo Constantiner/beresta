@@ -49,6 +49,17 @@ const setLevel = (category, level) => {
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
+const clearLevel = category => {
+	const loggerDescription = categories.get(category);
+	const isRoot = category === ROOT_CATEGORY;
+	if (isRoot) {
+		loggerDescription.level = OFF;
+	} else {
+		delete loggerDescription.level;
+	}
+	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
+};
+
 const isLevelEnabled = (level, category) => {
 	const loggerDescription = categories.get(category);
 	const effectiveLevel = loggerDescription.level || loggerDescription.levelDerived;
@@ -76,4 +87,14 @@ const log = (level, category, ...args) => {
 
 initRoot();
 
-export { registerLogger, setAppender, setLevel, getLogger, ROOT_CATEGORY, isLevelEnabled, normalizeCategory, log };
+export {
+	registerLogger,
+	setAppender,
+	setLevel,
+	clearLevel,
+	getLogger,
+	ROOT_CATEGORY,
+	isLevelEnabled,
+	normalizeCategory,
+	log
+};
