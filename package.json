@@ -1,7 +1,7 @@
 {
 	"name": "@constantiner/beresta",
 	"version": "0.0.1",
-	"description": "A minimalists logging library for JavaScript to use in browsers or in Node.js",
+	"description": "A minimalists logging library for JavaScript to use in browsers or in Node.js without dependencies",
 	"main": "beresta.js",
 	"scripts": {
 		"test": "npx jest --config jest.config.json",
