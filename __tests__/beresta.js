@@ -298,6 +298,52 @@ describe("General integration tests", () => {
 			expect(e.message).toBe(`Invalid level ${invalidLevel}`);
 		}
 	});
+	it("should not accept setLevel without level", () => {
+		try {
+			getLogger("test.test.test").setLevel();
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid level ${undefined}`);
+		}
+	});
+	it("should not accept setLevel with null", () => {
+		try {
+			getLogger("test.test.test").setLevel(null);
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid level ${null}`);
+		}
+	});
+	it("should not accept setAppender without appender", () => {
+		try {
+			getLogger("test.test.test").setAppender();
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid appender ${undefined}`);
+		}
+	});
+	it("should not accept setAppender with null", () => {
+		try {
+			getLogger("test.test.test").setAppender(null);
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid appender ${null}`);
+		}
+	});
+	it("should not accept setAppender which is not a function", () => {
+		const invalidAppender = [1, 2, 3];
+		try {
+			getLogger("test.test.test").setAppender(invalidAppender);
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid appender ${invalidAppender}`);
+		}
+	});
 	it("should work fine without appenders", () => {
 		const rootLogger = getRootLogger().setLevel(ALL);
 		const logger = rootLogger.debug("test");

@@ -23,6 +23,9 @@ const makeBaseLogger = category =>
 
 const configureSetAppender = (logger, category) => (
 	(logger.setAppender = function _setAppender(appender) {
+		if (typeof appender !== "function") {
+			throw new Error(`Invalid appender ${appender}`);
+		}
 		setAppender(category, appender);
 		return logger;
 	}),
