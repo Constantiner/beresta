@@ -43,6 +43,12 @@ const setAppender = (category, appender) => {
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
+const clearAppender = category => {
+	const loggerDescription = categories.get(category);
+	delete loggerDescription.appender;
+	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
+};
+
 const setLevel = (category, level) => {
 	const loggerDescription = categories.get(category);
 	loggerDescription.level = level;
@@ -90,6 +96,7 @@ initRoot();
 export {
 	registerLogger,
 	setAppender,
+	clearAppender,
 	setLevel,
 	clearLevel,
 	getLogger,

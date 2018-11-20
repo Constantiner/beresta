@@ -296,6 +296,40 @@ describe("Integration tests for appenders", () => {
 		);
 		expect(testTestTestAppender).not.toBeCalled();
 		expect(rootAppender).not.toBeCalled();
+
+		rootAppender.mockClear();
+		testAppender.mockClear();
+		testTestTestAppender2.mockClear();
+		testTestTestFirstSecondAppender.mockClear();
+		testTestTestAppender.mockClear();
+		rootAppender2.mockClear();
+
+		testTestTestLogger.clearAppender();
+		rootLogger
+			.clearAppender()
+			.debug("first", "second")
+			.fatal("first", "second", "third");
+		testLogger.error("second", "first");
+		testTestLogger.error("third", "second", "first");
+		testTestTestLogger.trace("second");
+		testTestTestFirstTestLogger.fatal("nothing");
+		testTestTestFirstSecondTestLogger.trace("everything");
+		expect(rootAppender2).not.toBeCalled();
+		expect(testAppender).toBeCalledTimes(2);
+		mockFnArgumentsExpectations(testAppender, 1, "ERROR", dateNow, "test.test", "third", "second", "first");
+		mockFnArgumentsExpectations(testAppender, 2, "TRACE", dateNow, "test.test.test", "second");
+		expect(testTestTestAppender2).not.toBeCalled();
+		expect(testTestTestFirstSecondAppender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(
+			testTestTestFirstSecondAppender,
+			1,
+			"TRACE",
+			dateNow,
+			"test.test.test.first.second.test",
+			"everything"
+		);
+		expect(testTestTestAppender).not.toBeCalled();
+		expect(rootAppender).not.toBeCalled();
 	});
 });
 describe("General integration tests", () => {
@@ -374,6 +408,11 @@ describe("General integration tests", () => {
 	it("should return the same logger for setAppender", () => {
 		const logger = getLogger("1.2.3");
 		const anotherLogger = getLogger("1.2.3").setAppender(() => {});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for clearAppender", () => {
+		const logger = getLogger("1.2.3").setAppender(() => {});
+		const anotherLogger = getLogger("1.2.3").clearAppender();
 		expect(logger).toBe(anotherLogger);
 	});
 	it("should return the same logger for trace", () => {
