@@ -40,20 +40,22 @@ const configureSetLevel = (logger, category) => (
 	logger
 );
 
-const createLogger = category => {
+const createLogger = (category, getLoggerFunction) => {
 	const logger = makeBaseLogger(category);
 	configureSetAppender(logger, category);
 	configureSetLevel(logger, category);
+	logger.getLogger = getLoggerFunction;
+	logger.getRootLogger = () => getLoggerFunction();
 	return registerLogger(category, logger);
 };
 
-const getLogger = category => {
+const getLogger = function getLogger(category) {
 	const normalizedCategory = normalizeCategory(category);
 	const existingLogger = getExistingLogger(normalizedCategory);
 	if (existingLogger) {
 		return existingLogger;
 	}
-	return createLogger(normalizedCategory);
+	return createLogger(normalizedCategory, getLogger);
 };
 
 const getRootLogger = () => getLogger();
