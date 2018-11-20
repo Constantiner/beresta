@@ -19,32 +19,35 @@ const initTree = (rootCategory, rootLoggerDescription) => {
 
 const getCategoryBreadcrumbs = category => category.split(".");
 
-const resolveLevelsAndAppendersForNode = (node, levelResolved, appenderResolved) => {
-	if (levelResolved && appenderResolved) {
-		return;
-	}
-	[...node.children.values()].forEach(subNode => {
-		let subLevelResolved = levelResolved;
-		if (!subLevelResolved) {
-			if (subNode.loggerDescription.level) {
-				subLevelResolved = true;
-			} else {
-				subNode.loggerDescription.levelDerived =
-					node.loggerDescription.level || node.loggerDescription.levelDerived;
-			}
-		}
-		let subAppenderResolved = appenderResolved;
-		if (!subAppenderResolved) {
-			if (subNode.loggerDescription.appender) {
-				subAppenderResolved = true;
-			} else {
-				subNode.loggerDescription.appenderDerived =
-					node.loggerDescription.appender || node.loggerDescription.appenderDerived;
-			}
-		}
-		resolveLevelsAndAppendersForNode(subNode, subLevelResolved, subAppenderResolved);
-	});
-};
+const setDerivedAppender = (targetLoggerDescription, sourceLoggerDescription) => (
+	(targetLoggerDescription.appenderDerived =
+		sourceLoggerDescription.appender || sourceLoggerDescription.appenderDerived),
+	false
+);
+
+const proceedChildAppender = (targetLoggerDescription, sourceLoggerDescription, appenderResolved) =>
+	appenderResolved ||
+	targetLoggerDescription.appender ||
+	setDerivedAppender(targetLoggerDescription, sourceLoggerDescription);
+
+const setDerivedLevel = (targetLoggerDescription, sourceLoggerDescription) => (
+	(targetLoggerDescription.levelDerived = sourceLoggerDescription.level || sourceLoggerDescription.levelDerived),
+	false
+);
+
+const proceedChildLevel = (targetLoggerDescription, sourceLoggerDescription, levelResolved) =>
+	levelResolved || targetLoggerDescription.level || setDerivedLevel(targetLoggerDescription, sourceLoggerDescription);
+
+const proceedChildren = (parentNode, levelResolved, appenderResolved) => subNode =>
+	resolveLevelsAndAppendersForNode(
+		subNode,
+		proceedChildLevel(subNode.loggerDescription, parentNode.loggerDescription, levelResolved),
+		proceedChildAppender(subNode.loggerDescription, parentNode.loggerDescription, appenderResolved)
+	);
+
+const resolveLevelsAndAppendersForNode = (node, isLevelResolved, isAppenderResolved) =>
+	(isLevelResolved && isAppenderResolved) ||
+	[...node.children.values()].forEach(proceedChildren(node, isLevelResolved, isAppenderResolved));
 
 const getNode = (category, isRootNode) => {
 	if (isRootNode) {
@@ -54,33 +57,24 @@ const getNode = (category, isRootNode) => {
 	return categoryBreadcrumbs.reduce((currentNode, part) => currentNode.children.get(part), tree);
 };
 
+const goToChildReducer = ({ currentNode, currentPath }, part) => {
+	let node = currentNode.children.get(part);
+	const newPath = [...currentPath, part];
+	if (!node) {
+		const name = newPath.join(".");
+		const loggerDescription = {
+			levelDerived: currentNode.loggerDescription.level || currentNode.loggerDescription.levelDerived,
+			appenderDerived: currentNode.loggerDescription.appender || currentNode.loggerDescription.appenderDerived
+		};
+		node = createTreeNode(part, name, currentNode, loggerDescription);
+	}
+	return { currentNode: node, currentPath: newPath };
+};
+
 const addLoggerToHierarchy = (category, loggerDescription, isRoot) => {
 	let node = isRoot
 		? tree
-		: getCategoryBreadcrumbs(category).reduce(
-				({ currentNode, currentPath }, part) => {
-					let node = currentNode.children.get(part);
-					const newPath = [...currentPath, part];
-					if (!node) {
-						const name = newPath.join(".");
-						const loggerDescription = {
-							levelDerived:
-								currentNode.loggerDescription.level || currentNode.loggerDescription.levelDerived,
-							appenderDerived:
-								currentNode.loggerDescription.appender || currentNode.loggerDescription.appenderDerived
-						};
-						node = createTreeNode(part, name, currentNode, loggerDescription);
-					} else {
-						const loggerDescription = node.loggerDescription;
-						loggerDescription.levelDerived =
-							currentNode.loggerDescription.level || currentNode.loggerDescription.levelDerived;
-						loggerDescription.appenderDerived =
-							currentNode.loggerDescription.appender || currentNode.loggerDescription.appenderDerived;
-					}
-					return { currentNode: node, currentPath: newPath };
-				},
-				{ currentNode: tree, currentPath: [] }
-		  ).currentNode;
+		: getCategoryBreadcrumbs(category).reduce(goToChildReducer, { currentNode: tree, currentPath: [] }).currentNode;
 	const existingLoggerDescription = node.loggerDescription;
 	if (existingLoggerDescription !== loggerDescription) {
 		node.loggerDescription = Object.assign(loggerDescription, existingLoggerDescription);

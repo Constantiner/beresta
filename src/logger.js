@@ -44,8 +44,7 @@ const createLogger = category => {
 	const logger = makeBaseLogger(category);
 	configureSetAppender(logger, category);
 	configureSetLevel(logger, category);
-	registerLogger(category, logger);
-	return logger;
+	return registerLogger(category, logger);
 };
 
 const getLogger = category => {

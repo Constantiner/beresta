@@ -27,7 +27,7 @@ const registerLogger = (category, logger) => {
 	const loggerDescription = createLoggerDescription(categories.get(category), logger);
 	categories.set(category, loggerDescription);
 	addLoggerToHierarchy(category, loggerDescription, category === ROOT_CATEGORY);
-	return category;
+	return logger;
 };
 
 const getLogger = category => {
@@ -55,19 +55,23 @@ const isLevelEnabled = (level, category) => {
 	return mayUseLevel(level, effectiveLevel);
 };
 
+const processLogging = (loggerDescription, level, category, ...args) => {
+	const appender = loggerDescription.appender || loggerDescription.appenderDerived;
+	if (!appender) {
+		return loggerDescription.logger;
+	}
+	const levelString = getLevelString(level);
+	appender(levelString, getNow(), category, ...args);
+	return loggerDescription.logger;
+};
+
 const log = (level, category, ...args) => {
 	const loggerDescription = categories.get(category);
 	const logger = loggerDescription.logger;
 	if (!isLevelEnabled(level, category)) {
 		return logger;
 	}
-	const appender = loggerDescription.appender || loggerDescription.appenderDerived;
-	if (!appender) {
-		return logger;
-	}
-	const levelString = getLevelString(level);
-	appender(levelString, getNow(), category, ...args);
-	return logger;
+	return processLogging(loggerDescription, level, category, ...args);
 };
 
 initRoot();
