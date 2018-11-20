@@ -24,8 +24,8 @@ const makeBaseLogger = category =>
 const configureSetAppender = (logger, category) => (
 	(logger.setAppender = function _setAppender(appender) {
 		setAppender(category, appender);
-		return this;
-	}.bind(logger)),
+		return logger;
+	}),
 	logger
 );
 
@@ -35,8 +35,8 @@ const configureSetLevel = (logger, category) => (
 			throw new Error(`Invalid level ${level}`);
 		}
 		setLevel(category, level);
-		return this;
-	}.bind(logger)),
+		return logger;
+	}),
 	logger
 );
 
