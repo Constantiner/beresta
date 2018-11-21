@@ -1,6 +1,6 @@
 import { TRACE, DEBUG, INFO, WARN, ERROR, FATAL } from "../../src/level/level";
 import consoleAppender from "../../src/appenders/console";
-import { getMockFn, mockFnArgumentsExpectations } from "../test-utils/jestMockFns";
+import { getMockFn, mockFnArgumentsExpectations, mockFnExpectations } from "../test-utils/jestMockFns";
 
 const replaceConsoleMethods = (trace, debug, info, warn, error) => {
 	global.console.warn = warn;
@@ -90,5 +90,41 @@ describe("Console appender tests", () => {
 		expect(warn).not.toBeCalled();
 		expect(error).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(error, 1, ...args);
+	});
+	it("should call console's debug with some layout", () => {
+		const { trace, debug, info, warn, error } = createConsoleMocks();
+		const layoutResult = ["first.first", "second.second"];
+		const layout = getMockFn(jest)(() => layoutResult, "layout");
+		const consoleApp = consoleAppender(layout);
+		const args = [DEBUG, new Date(), "test.test", "first", "second"];
+		consoleApp(...args);
+		expect(trace).not.toBeCalled();
+		expect(debug).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(debug, 1, ...layoutResult);
+		expect(info).not.toBeCalled();
+		expect(warn).not.toBeCalled();
+		expect(error).not.toBeCalled();
+		expect(layout).toBeCalledTimes(1);
+		mockFnExpectations(layout, 1, layoutResult, ...args);
+	});
+	it("shouldn't work with console's debug and layout returning not array", () => {
+		const { trace, debug, info, warn, error } = createConsoleMocks();
+		const layoutResult = 1;
+		const layout = getMockFn(jest)(() => layoutResult, "layout");
+		const consoleApp = consoleAppender(layout);
+		const args = [DEBUG, new Date(), "test.test", "first", "second"];
+		try {
+			consoleApp(...args);
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(trace).not.toBeCalled();
+			expect(debug).not.toBeCalled();
+			expect(info).not.toBeCalled();
+			expect(warn).not.toBeCalled();
+			expect(error).not.toBeCalled();
+			expect(layout).toBeCalledTimes(1);
+			mockFnExpectations(layout, 1, layoutResult, ...args);
+		}
 	});
 });
