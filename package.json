@@ -53,5 +53,8 @@
 		"lint-staged": "^8.0.5",
 		"prettier": "^1.15.2",
 		"regenerator-runtime": "^0.13.1"
+	},
+	"dependencies": {
+		"date-fns": "^1.29.0"
 	}
 }

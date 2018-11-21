@@ -1,7 +1,7 @@
 {
 	"collectCoverageFrom": [
 		"<rootDir>/src/**/*.js",
-		"!<rootDir>/src/appenders/**/*.js",
+		"!<rootDir>/src/formatters/**/*.js",
 		"!<rootDir>/src/layouts/**/*.js"
 	],
 	"coverageDirectory": "<rootDir>/coverage/",
