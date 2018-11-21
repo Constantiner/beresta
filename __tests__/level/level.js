@@ -1,4 +1,12 @@
-import { DEBUG, WARN, ERROR, FATAL, getMethodForSymbol, getCapitalizedMethodForSymbol } from "../../src/level/level";
+import {
+	DEBUG,
+	ERROR,
+	FATAL,
+	getCapitalizedMethodForSymbol,
+	getLevelString,
+	getMethodForSymbol,
+	WARN
+} from "../../src/level/level";
 
 describe("Level tests", () => {
 	it("should return debug for DEBUG as method name", () => {
@@ -22,6 +30,18 @@ describe("Level tests", () => {
 		const expected = "Fatal";
 		const result1 = getCapitalizedMethodForSymbol(FATAL);
 		const result2 = getCapitalizedMethodForSymbol(FATAL);
+		expect(result1).toBe(expected);
+		expect(result2).toBe(expected);
+	});
+	it("should return Error for ERROR as level string", () => {
+		const expected = "ERROR";
+		const result = getLevelString(ERROR);
+		expect(result).toBe(expected);
+	});
+	it("should return Fatal for FATAL as level string twice to test cache", () => {
+		const expected = "FATAL";
+		const result1 = getLevelString(FATAL);
+		const result2 = getLevelString(FATAL);
 		expect(result1).toBe(expected);
 		expect(result2).toBe(expected);
 	});

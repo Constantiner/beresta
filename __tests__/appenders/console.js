@@ -1,5 +1,5 @@
-import { TRACE, DEBUG, INFO, WARN, ERROR, FATAL } from "../../src/level/level";
 import consoleAppender from "../../src/appenders/console";
+import { DEBUG, ERROR, FATAL, INFO, TRACE, WARN } from "../../src/level/level";
 import { getMockFn, mockFnArgumentsExpectations, mockFnExpectations } from "../test-utils/jestMockFns";
 
 const replaceConsoleMethods = (trace, debug, info, warn, error) => {
