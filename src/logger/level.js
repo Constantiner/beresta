@@ -18,7 +18,7 @@ const levelStringsCache = {};
 const levelIndicesCache = {};
 
 const getFromCache = (cache, symbol) => cache[symbol];
-const setToCache = (cache, symbol, str) => ((cache[symbol] = str), str);
+const setToCache = (cache, symbol, value) => ((cache[symbol] = value), value);
 
 const getLevelIndex = level =>
 	getFromCache(levelIndicesCache, level) ||
