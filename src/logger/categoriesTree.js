@@ -5,10 +5,10 @@ const createTreeNode = (name, fullName, parent, loggerDescription) => {
 		name: fullName,
 		parent,
 		loggerDescription,
-		children: new Map()
+		children: {}
 	};
 	if (parent) {
-		parent.children.set(name, node);
+		parent.children[name] = node;
 	}
 	return node;
 };
@@ -47,18 +47,18 @@ const proceedChildren = (parentNode, levelResolved, appenderResolved) => subNode
 
 const resolveLevelsAndAppendersForNode = (node, isLevelResolved, isAppenderResolved) =>
 	(isLevelResolved && isAppenderResolved) ||
-	[...node.children.values()].forEach(proceedChildren(node, isLevelResolved, isAppenderResolved));
+	Object.values(node.children).forEach(proceedChildren(node, isLevelResolved, isAppenderResolved));
 
 const getNode = (category, isRootNode) => {
 	if (isRootNode) {
 		return tree;
 	}
 	const categoryBreadcrumbs = getCategoryBreadcrumbs(category);
-	return categoryBreadcrumbs.reduce((currentNode, part) => currentNode.children.get(part), tree);
+	return categoryBreadcrumbs.reduce((currentNode, part) => currentNode.children[part], tree);
 };
 
 const goToChildReducer = ({ currentNode, currentPath }, part) => {
-	let node = currentNode.children.get(part);
+	let node = currentNode.children[part];
 	const newPath = [...currentPath, part];
 	if (!node) {
 		const name = newPath.join(".");
