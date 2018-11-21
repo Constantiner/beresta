@@ -154,7 +154,7 @@ describe("Integration tests for appenders", () => {
 			.getLogger("test.test/test")
 			.debug("first", "second");
 		expect(appender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(appender, 1, "DEBUG", dateNow, "test.test.test", "first", "second");
+		mockFnArgumentsExpectations(appender, 1, DEBUG, dateNow, "test.test.test", "first", "second");
 	});
 	it("should be called for explicit appender for nested logger", () => {
 		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
@@ -166,7 +166,7 @@ describe("Integration tests for appenders", () => {
 			.setAppender(appender)
 			.debug("first", "second");
 		expect(appender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(appender, 1, "DEBUG", dateNow, "test.test.test", "first", "second");
+		mockFnArgumentsExpectations(appender, 1, DEBUG, dateNow, "test.test.test", "first", "second");
 		expect(rootAppender).not.toBeCalled();
 	});
 	it("should be called for nested logger of explicit appender for nested logger", () => {
@@ -180,7 +180,7 @@ describe("Integration tests for appenders", () => {
 			.getLogger("test.test.test.first")
 			.debug("first", "second");
 		expect(appender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(appender, 1, "DEBUG", dateNow, "test.test.test.first", "first", "second");
+		mockFnArgumentsExpectations(appender, 1, DEBUG, dateNow, "test.test.test.first", "first", "second");
 		expect(rootAppender).not.toBeCalled();
 	});
 	it("should not be called for nested logger of explicit appender for nested logger", () => {
@@ -211,7 +211,7 @@ describe("Integration tests for appenders", () => {
 			.getLogger("test.test.test.first.second")
 			.error("first", "second");
 		expect(appender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(appender, 1, "ERROR", dateNow, "test.test.test.first.second", "first", "second");
+		mockFnArgumentsExpectations(appender, 1, ERROR, dateNow, "test.test.test.first.second", "first", "second");
 		expect(rootAppender).not.toBeCalled();
 	});
 	it("should perform complex test", () => {
@@ -245,16 +245,16 @@ describe("Integration tests for appenders", () => {
 		testTestTestFirstTestLogger.fatal("nothing");
 		testTestTestFirstSecondTestLogger.trace("everything");
 		expect(rootAppender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(rootAppender, 1, "FATAL", dateNow, "", "first", "second", "third");
+		mockFnArgumentsExpectations(rootAppender, 1, FATAL, dateNow, "", "first", "second", "third");
 		expect(testAppender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(testAppender, 1, "ERROR", dateNow, "test.test", "third", "second", "first");
+		mockFnArgumentsExpectations(testAppender, 1, ERROR, dateNow, "test.test", "third", "second", "first");
 		expect(testTestTestAppender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(testTestTestAppender, 1, "TRACE", dateNow, "test.test.test", "second");
+		mockFnArgumentsExpectations(testTestTestAppender, 1, TRACE, dateNow, "test.test.test", "second");
 		expect(testTestTestFirstSecondAppender).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(
 			testTestTestFirstSecondAppender,
 			1,
-			"TRACE",
+			TRACE,
 			dateNow,
 			"test.test.test.first.second.test",
 			"everything"
@@ -280,16 +280,16 @@ describe("Integration tests for appenders", () => {
 		testTestTestFirstTestLogger.fatal("nothing");
 		testTestTestFirstSecondTestLogger.trace("everything");
 		expect(rootAppender2).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(rootAppender2, 1, "FATAL", dateNow, "", "first", "second", "third");
+		mockFnArgumentsExpectations(rootAppender2, 1, FATAL, dateNow, "", "first", "second", "third");
 		expect(testAppender).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(testAppender, 1, "ERROR", dateNow, "test.test", "third", "second", "first");
+		mockFnArgumentsExpectations(testAppender, 1, ERROR, dateNow, "test.test", "third", "second", "first");
 		expect(testTestTestAppender2).toBeCalledTimes(1);
-		mockFnArgumentsExpectations(testTestTestAppender2, 1, "TRACE", dateNow, "test.test.test", "second");
+		mockFnArgumentsExpectations(testTestTestAppender2, 1, TRACE, dateNow, "test.test.test", "second");
 		expect(testTestTestFirstSecondAppender).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(
 			testTestTestFirstSecondAppender,
 			1,
-			"TRACE",
+			TRACE,
 			dateNow,
 			"test.test.test.first.second.test",
 			"everything"
@@ -316,14 +316,14 @@ describe("Integration tests for appenders", () => {
 		testTestTestFirstSecondTestLogger.trace("everything");
 		expect(rootAppender2).not.toBeCalled();
 		expect(testAppender).toBeCalledTimes(2);
-		mockFnArgumentsExpectations(testAppender, 1, "ERROR", dateNow, "test.test", "third", "second", "first");
-		mockFnArgumentsExpectations(testAppender, 2, "TRACE", dateNow, "test.test.test", "second");
+		mockFnArgumentsExpectations(testAppender, 1, ERROR, dateNow, "test.test", "third", "second", "first");
+		mockFnArgumentsExpectations(testAppender, 2, TRACE, dateNow, "test.test.test", "second");
 		expect(testTestTestAppender2).not.toBeCalled();
 		expect(testTestTestFirstSecondAppender).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(
 			testTestTestFirstSecondAppender,
 			1,
-			"TRACE",
+			TRACE,
 			dateNow,
 			"test.test.test.first.second.test",
 			"everything"

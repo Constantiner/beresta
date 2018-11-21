@@ -1,5 +1,5 @@
 import { addLoggerToHierarchy, initTree, updateAppenderOrLevel } from "./categoriesTree";
-import { getLevelString, mayUseLevel, OFF } from "../level/level";
+import { mayUseLevel, OFF } from "../level/level";
 import { getNow } from "../util/dateUtil";
 
 const ROOT_CATEGORY = "";
@@ -77,8 +77,7 @@ const processLogging = (loggerDescription, level, category, ...args) => {
 	if (!appender) {
 		return loggerDescription.logger;
 	}
-	const levelString = getLevelString(level);
-	appender(levelString, getNow(), category, ...args);
+	appender(level, getNow(), category, ...args);
 	return loggerDescription.logger;
 };
 
