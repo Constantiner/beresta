@@ -1,29 +1,29 @@
 import {
-	clearLevel,
 	clearAppender,
+	clearLevel,
 	getLogger as getExistingLogger,
-	isLevelEnabled as isRequestedLevelEnabled,
-	log as performLog,
+	isLevelEnabled,
+	log,
 	normalizeCategory,
 	registerLogger,
 	setAppender,
 	setLevel
 } from "./categories";
 import { getCapitalizedMethodForSymbol, getMethodForSymbol, isValidLevel, validForLoggingSymbols } from "./level";
+import compose from "./util/compose";
 
-const log = (level, category, ...args) => performLog(level, category, ...args);
-const isLevelEnabled = (level, category) => isRequestedLevelEnabled(level, category);
-
-const makeBaseLogger = category =>
-	validForLoggingSymbols.reduce((logger, level) => {
+const makeBaseLogger = category => ({
+	logger: validForLoggingSymbols.reduce((logger, level) => {
 		const methodName = getMethodForSymbol(level);
 		logger[methodName] = (...args) => log(level, category, ...args);
 		const capitalizedMethodName = getCapitalizedMethodForSymbol(level);
 		logger[`is${capitalizedMethodName}Enabled`] = () => isLevelEnabled(level, category);
 		return logger;
-	}, {});
+	}, {}),
+	category
+});
 
-const configureSetAppender = (logger, category) => (
+const configureSetAppender = ({ logger, category }) => (
 	(logger.setAppender = function _setAppender(appender) {
 		if (typeof appender !== "function") {
 			throw new Error(`Invalid appender ${appender}`);
@@ -31,18 +31,18 @@ const configureSetAppender = (logger, category) => (
 		setAppender(category, appender);
 		return logger;
 	}),
-	logger
+	{ logger, category }
 );
 
-const configureClearAppender = (logger, category) => (
+const configureClearAppender = ({ logger, category }) => (
 	(logger.clearAppender = function _clearAppender() {
 		clearAppender(category);
 		return logger;
 	}),
-	logger
+	{ logger, category }
 );
 
-const configureSetLevel = (logger, category) => (
+const configureSetLevel = ({ logger, category }) => (
 	(logger.setLevel = function _setLevel(level) {
 		if (!isValidLevel(level)) {
 			throw new Error(`Invalid level ${level}`);
@@ -50,35 +50,36 @@ const configureSetLevel = (logger, category) => (
 		setLevel(category, level);
 		return logger;
 	}),
-	logger
+	{ logger, category }
 );
 
-const configureClearLevel = (logger, category) => (
+const configureClearLevel = ({ logger, category }) => (
 	(logger.clearLevel = function _clearLevel() {
 		clearLevel(category);
 		return logger;
 	}),
-	logger
+	{ logger, category }
 );
 
-const createLogger = (category, getLoggerFunction) => {
-	const logger = makeBaseLogger(category);
-	configureSetAppender(logger, category);
-	configureClearAppender(logger, category);
-	configureSetLevel(logger, category);
-	configureClearLevel(logger, category);
+const configureGetLoggerFuncs = getLoggerFunction => ({ logger, category }) => {
 	logger.getLogger = getLoggerFunction;
 	logger.getRootLogger = () => getLoggerFunction();
-	return registerLogger(category, logger);
+	return { logger, category };
 };
+const createLogger = (category, getLoggerFunction) =>
+	compose(
+		registerLogger,
+		configureGetLoggerFuncs(getLoggerFunction),
+		configureClearLevel,
+		configureSetLevel,
+		configureClearAppender,
+		configureSetAppender,
+		makeBaseLogger
+	)(category);
 
 const getLogger = function getLogger(category) {
 	const normalizedCategory = normalizeCategory(category);
-	const existingLogger = getExistingLogger(normalizedCategory);
-	if (existingLogger) {
-		return existingLogger;
-	}
-	return createLogger(normalizedCategory, getLogger);
+	return getExistingLogger(normalizedCategory) || createLogger(normalizedCategory, getLogger);
 };
 
 const getRootLogger = () => getLogger();

@@ -23,7 +23,7 @@ const createLoggerDescription = (originalLoggerDescription, logger) => {
 	return loggerDescription;
 };
 
-const registerLogger = (category, logger) => {
+const registerLogger = ({ category, logger }) => {
 	const loggerDescription = createLoggerDescription(categories.get(category), logger);
 	categories.set(category, loggerDescription);
 	addLoggerToHierarchy(category, loggerDescription, category === ROOT_CATEGORY);
