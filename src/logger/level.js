@@ -20,6 +20,7 @@ const mayUseLevel = (candidateLevel, useAgainstLevel) => {
 
 const methodsCache = {};
 const capitalizedMethodsCache = {};
+const levelStringsCache = {};
 
 const getFromCache = (cache, symbol) => cache[symbol];
 const setToCache = (cache, symbol, str) => ((cache[symbol] = str), str);
@@ -40,7 +41,9 @@ const getCapitalizedMethodForSymbol = symbol =>
 	getFromCache(capitalizedMethodsCache, symbol) ||
 	setToCache(capitalizedMethodsCache, symbol, capitalize(getMethodForSymbol(symbol)));
 
-const getLevelString = symbol => getMethodForSymbol(symbol).toUpperCase();
+const getLevelString = symbol =>
+	getFromCache(levelStringsCache, symbol) ||
+	setToCache(levelStringsCache, symbol, getMethodForSymbol(symbol).toUpperCase());
 
 export {
 	ALL,
