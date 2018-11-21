@@ -12,18 +12,24 @@ const allValidLoggingSymbols = [ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF
 
 const isValidLevel = level => allValidLoggingSymbols.indexOf(level) > -1;
 
-const mayUseLevel = (candidateLevel, useAgainstLevel) => {
-	const useAgainstLevelIndex = allValidLoggingSymbols.indexOf(useAgainstLevel);
-	const candidateLevelIndex = allValidLoggingSymbols.indexOf(candidateLevel);
-	return candidateLevelIndex >= useAgainstLevelIndex;
-};
-
 const methodsCache = {};
 const capitalizedMethodsCache = {};
 const levelStringsCache = {};
+const levelIndicesCache = {};
 
 const getFromCache = (cache, symbol) => cache[symbol];
 const setToCache = (cache, symbol, str) => ((cache[symbol] = str), str);
+
+const mayUseLevel = (candidateLevel, useAgainstLevel) => {
+	const useAgainstLevelIndex =
+		getFromCache(levelIndicesCache, useAgainstLevel) ||
+		setToCache(levelIndicesCache, useAgainstLevel, allValidLoggingSymbols.indexOf(useAgainstLevel));
+	const candidateLevelIndex =
+		getFromCache(levelIndicesCache, candidateLevel) ||
+		setToCache(levelIndicesCache, candidateLevel, allValidLoggingSymbols.indexOf(candidateLevel));
+	return candidateLevelIndex >= useAgainstLevelIndex;
+};
+
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 const getMethodForSymbol = symbol =>
