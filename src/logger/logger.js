@@ -10,7 +10,7 @@ import {
 	setLevel
 } from "./categories";
 import { getCapitalizedMethodForSymbol, getMethodForSymbol, isValidLevel, validForLoggingSymbols } from "./level";
-import compose from "./util/compose";
+import compose from "../util/compose";
 
 const makeBaseLogger = category => ({
 	logger: validForLoggingSymbols.reduce((logger, level) => {
