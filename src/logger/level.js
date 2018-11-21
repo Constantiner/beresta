@@ -20,15 +20,12 @@ const levelIndicesCache = {};
 const getFromCache = (cache, symbol) => cache[symbol];
 const setToCache = (cache, symbol, str) => ((cache[symbol] = str), str);
 
-const mayUseLevel = (candidateLevel, useAgainstLevel) => {
-	const useAgainstLevelIndex =
-		getFromCache(levelIndicesCache, useAgainstLevel) ||
-		setToCache(levelIndicesCache, useAgainstLevel, allValidLoggingSymbols.indexOf(useAgainstLevel));
-	const candidateLevelIndex =
-		getFromCache(levelIndicesCache, candidateLevel) ||
-		setToCache(levelIndicesCache, candidateLevel, allValidLoggingSymbols.indexOf(candidateLevel));
-	return candidateLevelIndex >= useAgainstLevelIndex;
-};
+const getLevelIndex = level =>
+	getFromCache(levelIndicesCache, level) ||
+	setToCache(levelIndicesCache, level, allValidLoggingSymbols.indexOf(level));
+
+const mayUseLevel = (candidateLevel, useAgainstLevel) =>
+	getLevelIndex(candidateLevel) >= getLevelIndex(useAgainstLevel);
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
