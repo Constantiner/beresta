@@ -3,11 +3,11 @@ import { getLevelString, mayUseLevel, OFF } from "./level";
 import { getNow } from "../util/dateUtil";
 
 const ROOT_CATEGORY = "";
-const categories = new Map();
+const categories = {};
 
 const initRoot = () => {
 	const rootLoggerDescription = { level: OFF };
-	categories.set(ROOT_CATEGORY, rootLoggerDescription);
+	categories[ROOT_CATEGORY] = rootLoggerDescription;
 	initTree(ROOT_CATEGORY, rootLoggerDescription);
 };
 
@@ -24,39 +24,39 @@ const createLoggerDescription = (originalLoggerDescription, logger) => {
 };
 
 const registerLogger = ({ category, logger }) => {
-	const loggerDescription = createLoggerDescription(categories.get(category), logger);
-	categories.set(category, loggerDescription);
+	const loggerDescription = createLoggerDescription(categories[category], logger);
+	categories[category] = loggerDescription;
 	addLoggerToHierarchy(category, loggerDescription, category === ROOT_CATEGORY);
 	return logger;
 };
 
 const getLogger = category => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	if (loggerDescription) {
 		return loggerDescription.logger;
 	}
 };
 
 const setAppender = (category, appender) => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	loggerDescription.appender = appender;
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
 const clearAppender = category => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	delete loggerDescription.appender;
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
 const setLevel = (category, level) => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	loggerDescription.level = level;
 	updateAppenderOrLevel(category, category === ROOT_CATEGORY);
 };
 
 const clearLevel = category => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	const isRoot = category === ROOT_CATEGORY;
 	if (isRoot) {
 		loggerDescription.level = OFF;
@@ -67,7 +67,7 @@ const clearLevel = category => {
 };
 
 const isLevelEnabled = (level, category) => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	const effectiveLevel = loggerDescription.level || loggerDescription.levelDerived;
 	return mayUseLevel(level, effectiveLevel);
 };
@@ -83,7 +83,7 @@ const processLogging = (loggerDescription, level, category, ...args) => {
 };
 
 const log = (level, category, ...args) => {
-	const loggerDescription = categories.get(category);
+	const loggerDescription = categories[category];
 	const logger = loggerDescription.logger;
 	if (!isLevelEnabled(level, category)) {
 		return logger;
