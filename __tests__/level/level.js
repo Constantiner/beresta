@@ -1,4 +1,4 @@
-import { DEBUG, WARN, ERROR, FATAL, getMethodForSymbol, getCapitalizedMethodForSymbol } from "../../src/logger/level";
+import { DEBUG, WARN, ERROR, FATAL, getMethodForSymbol, getCapitalizedMethodForSymbol } from "../../src/level/level";
 
 describe("Level tests", () => {
 	it("should return debug for DEBUG as method name", () => {

@@ -1,5 +1,5 @@
 import { addLoggerToHierarchy, initTree, updateAppenderOrLevel } from "./categoriesTree";
-import { getLevelString, mayUseLevel, OFF } from "./level";
+import { getLevelString, mayUseLevel, OFF } from "../level/level";
 import { getNow } from "../util/dateUtil";
 
 const ROOT_CATEGORY = "";

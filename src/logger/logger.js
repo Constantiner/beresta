@@ -9,7 +9,12 @@ import {
 	setAppender,
 	setLevel
 } from "./categories";
-import { getCapitalizedMethodForSymbol, getMethodForSymbol, isValidLevel, validForLoggingSymbols } from "./level";
+import {
+	getCapitalizedMethodForSymbol,
+	getMethodForSymbol,
+	isValidLevel,
+	validForLoggingSymbols
+} from "../level/level";
 import compose from "../util/compose";
 
 const makeBaseLogger = category => ({
