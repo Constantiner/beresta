@@ -99,7 +99,6 @@ export {
 	setLevel,
 	clearLevel,
 	getLogger,
-	ROOT_CATEGORY,
 	isLevelEnabled,
 	normalizeCategory,
 	log
