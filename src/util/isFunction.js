@@ -2,7 +2,7 @@ const isFunction = fn => typeof fn === "function";
 
 const identity = fn => fn;
 
-const funcSafetyCheckAndAcceptNoFunction = (fn, message) => {
+const funcSafetyCheckAllowingNoFunction = (fn, message) => {
 	if (fn && !isFunction(fn)) {
 		throw new Error(message);
 	}
@@ -17,6 +17,6 @@ const strictFuncSafetyCheck = (fn, message) => {
 };
 
 const funcSafetyCheck = (fn, message, noFunctionIsAcceptable) =>
-	noFunctionIsAcceptable ? funcSafetyCheckAndAcceptNoFunction(fn, message) : strictFuncSafetyCheck(fn, message);
+	noFunctionIsAcceptable ? funcSafetyCheckAllowingNoFunction(fn, message) : strictFuncSafetyCheck(fn, message);
 
 export { isFunction, funcSafetyCheck };
