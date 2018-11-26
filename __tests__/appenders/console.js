@@ -127,4 +127,14 @@ describe("Console appender tests", () => {
 			mockFnExpectations(layout, 1, layoutResult, ...args);
 		}
 	});
+	it("shouldn't work with invalid layout function", () => {
+		const invalidLayout = "Invalid layout function";
+		try {
+			consoleAppender(invalidLayout);
+			expect(true).toBe(false);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid layout function ${invalidLayout}`);
+		}
+	});
 });

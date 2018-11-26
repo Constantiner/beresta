@@ -1,4 +1,5 @@
 import { TRACE, DEBUG, INFO, WARN, ERROR, FATAL } from "../level/level";
+import { isFunction, funcSafetyCheck } from "../util/isFunction";
 
 /* eslint-disable-next-line no-console */
 const consoleWarn = (...args) => console.warn(...args);
@@ -22,7 +23,14 @@ const levelToConsoleTable = {
 
 const getLoggingFunctionForLevel = level => levelToConsoleTable[level];
 
-const consoleAppender = (layoutFunction = (...args) => args) => (level, date, category, ...args) =>
-	getLoggingFunctionForLevel(level)(...layoutFunction(level, date, category, ...args));
+const consoleAppender = layoutFunction =>
+	funcSafetyCheck(layoutFunction, `Invalid layout function ${layoutFunction}`, true)(
+		(level, date, category, ...args) => {
+			const loggingFn = getLoggingFunctionForLevel(level);
+			return isFunction(layoutFunction)
+				? loggingFn(...layoutFunction(level, date, category, ...args))
+				: loggingFn(level, date, category, ...args);
+		}
+	);
 
 export default consoleAppender;

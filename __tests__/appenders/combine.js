@@ -3,15 +3,23 @@ import { DEBUG, TRACE } from "../../src/level/level";
 import { getMockFn, mockFnArgumentsExpectations } from "../test-utils/jestMockFns";
 
 describe("Combine appender tests", () => {
-	it("should throw a error without appenders", () => {
-		const args = [TRACE, new Date(), "test.test", "first", "second"];
+	it("should throw an error without appenders", () => {
 		try {
-			const appender = combineAppender();
+			combineAppender();
 			expect(false).toBe(true);
-			appender(...args);
 		} catch (e) {
 			expect(e).toBeInstanceOf(Error);
 			expect(e.message).toBe("You should provide at least one appender to combine");
+		}
+	});
+	it("should throw an error if appender is not a function", () => {
+		const subAppender = "subAppender";
+		try {
+			combineAppender(subAppender);
+			expect(false).toBe(true);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid appender ${subAppender}`);
 		}
 	});
 	it("should work with single appender to combine", () => {
@@ -26,7 +34,7 @@ describe("Combine appender tests", () => {
 		const subAppender1 = getMockFn(jest)(() => {}, "subAppender1");
 		const subAppender2 = getMockFn(jest)(() => {}, "subAppender2");
 		const subAppender3 = getMockFn(jest)(() => {}, "subAppender3");
-		const args = [DEBUG, new Date(), "test.test", "first", "second"];
+		const args = [TRACE, new Date(), "test.test", "first", "second"];
 		const appender = combineAppender(subAppender1, subAppender2, subAppender3);
 		appender(...args);
 		expect(subAppender1).toBeCalledTimes(1);

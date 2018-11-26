@@ -1,4 +1,12 @@
 import {
+	getCapitalizedMethodForSymbol,
+	getMethodForSymbol,
+	isValidLevel,
+	validForLoggingSymbols
+} from "../level/level";
+import compose from "../util/compose";
+import { isFunction } from "../util/isFunction";
+import {
 	clearAppender,
 	clearLevel,
 	getLogger as getExistingLogger,
@@ -9,13 +17,6 @@ import {
 	setAppender,
 	setLevel
 } from "./categories";
-import {
-	getCapitalizedMethodForSymbol,
-	getMethodForSymbol,
-	isValidLevel,
-	validForLoggingSymbols
-} from "../level/level";
-import compose from "../util/compose";
 
 const makeBaseLogger = category => ({
 	logger: validForLoggingSymbols.reduce((logger, level) => {
@@ -30,7 +31,7 @@ const makeBaseLogger = category => ({
 
 const configureSetAppender = ({ logger, category }) => (
 	(logger.setAppender = function _setAppender(appender) {
-		if (typeof appender !== "function") {
+		if (!isFunction(appender)) {
 			throw new Error(`Invalid appender ${appender}`);
 		}
 		setAppender(category, appender);

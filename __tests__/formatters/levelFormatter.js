@@ -9,6 +9,16 @@ describe("Level formatter tests", () => {
 		const resultingArgs = formatter(...args);
 		expect(resultingArgs).toEqual(["TRACE", ...baseArgs]);
 	});
+	it("shouldn't return convert function with invalid formatter", () => {
+		const additionalFormatter = "invalidFormatter";
+		try {
+			levelFormatter(additionalFormatter);
+			expect(false).toBe(true);
+		} catch (e) {
+			expect(e).toBeInstanceOf(Error);
+			expect(e.message).toBe(`Invalid formatter ${additionalFormatter}`);
+		}
+	});
 	it("should convert level to string with additional formatting", () => {
 		const additionalFormatter = levelString => `[${levelString.padEnd(10, ".")}]`;
 		const formatter = levelFormatter(additionalFormatter);
