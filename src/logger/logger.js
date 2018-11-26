@@ -18,10 +18,23 @@ import {
 	setLevel
 } from "./categories";
 
+const getObjectSequenceFromTemplateLiteral = (strings, ...args) =>
+	strings.reduce((acc, string, i) => {
+		if (string !== "") {
+			acc.push(string);
+		}
+		if (i < args.length) {
+			acc.push(args[i]);
+		}
+		return acc;
+	}, []);
+
 const makeBaseLogger = category => ({
 	logger: validForLoggingSymbols.reduce((logger, level) => {
 		const methodName = getMethodForSymbol(level);
 		logger[methodName] = (...args) => log(level, category, ...args);
+		logger[`$${methodName}`] = (strings, ...args) =>
+			log(level, category, ...getObjectSequenceFromTemplateLiteral(strings, ...args));
 		const capitalizedMethodName = getCapitalizedMethodForSymbol(level);
 		logger[`is${capitalizedMethodName}Enabled`] = () => isLevelEnabled(level, category);
 		return logger;

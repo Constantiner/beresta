@@ -146,6 +146,13 @@ describe("Integration tests for appenders", () => {
 			.debug("first", "second");
 		expect(appender).not.toBeCalled();
 	});
+	it("should not log anything by default with tagged template literal", () => {
+		const appender = getMockFn(jest)(() => null, "appender");
+		const first = { test: 10 };
+		const second = "second";
+		getLogger("test.test.test").setAppender(appender).$debug`Hello ${first} and ${second} too!`;
+		expect(appender).not.toBeCalled();
+	});
 	it("should be called for nested logger", () => {
 		const appender = getMockFn(jest)(() => null, "appender");
 		getRootLogger()
@@ -155,6 +162,17 @@ describe("Integration tests for appenders", () => {
 			.debug("first", "second");
 		expect(appender).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(appender, 1, DEBUG, dateNow, "test.test.test", "first", "second");
+	});
+	it("should be called for nested logger with tagged template literal", () => {
+		const appender = getMockFn(jest)(() => null, "appender");
+		const first = { test: 10 };
+		const second = "second";
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(appender)
+			.getLogger("test.test/test").$debug`${first}${second}`;
+		expect(appender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(appender, 1, DEBUG, dateNow, "test.test.test", first, second);
 	});
 	it("should be called for explicit appender for nested logger", () => {
 		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
@@ -212,6 +230,34 @@ describe("Integration tests for appenders", () => {
 			.error("first", "second");
 		expect(appender).toBeCalledTimes(1);
 		mockFnArgumentsExpectations(appender, 1, ERROR, dateNow, "test.test.test.first.second", "first", "second");
+		expect(rootAppender).not.toBeCalled();
+	});
+	it("should be called for nested logger of explicit appender for nested logger with level and tagged template literal", () => {
+		const first = { test: 10 };
+		const second = "second";
+		const rootAppender = getMockFn(jest)(() => null, "rootAppender");
+		const appender = getMockFn(jest)(() => null, "appender");
+		getRootLogger()
+			.setLevel(DEBUG)
+			.setAppender(rootAppender)
+			.getLogger("test.test.test")
+			.setAppender(appender)
+			.getLogger("test.test.test.first")
+			.setLevel(WARN)
+			.getLogger("test.test.test.first.second").$error`Hello ${first} and ${second} too!`;
+		expect(appender).toBeCalledTimes(1);
+		mockFnArgumentsExpectations(
+			appender,
+			1,
+			ERROR,
+			dateNow,
+			"test.test.test.first.second",
+			"Hello ",
+			first,
+			" and ",
+			second,
+			" too!"
+		);
 		expect(rootAppender).not.toBeCalled();
 	});
 	it("should perform complex test", () => {
@@ -420,9 +466,19 @@ describe("General integration tests", () => {
 		const anotherLogger = getLogger("1.2.3").trace({});
 		expect(logger).toBe(anotherLogger);
 	});
+	it("should return the same logger for $trace tagged template literal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").$trace`Hello ${[1, 2, 3]} world!`;
+		expect(logger).toBe(anotherLogger);
+	});
 	it("should return the same logger for debug", () => {
 		const logger = getLogger("1.2.3");
 		const anotherLogger = getLogger("1.2.3").debug({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for $debug tagged template literal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").$debug`Hello ${[1, 2, 3]} world!`;
 		expect(logger).toBe(anotherLogger);
 	});
 	it("should return the same logger for info", () => {
@@ -430,9 +486,19 @@ describe("General integration tests", () => {
 		const anotherLogger = getLogger("1.2.3").info({});
 		expect(logger).toBe(anotherLogger);
 	});
+	it("should return the same logger for $info tagged template literal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").$info`Hello ${[1, 2, 3]} world!`;
+		expect(logger).toBe(anotherLogger);
+	});
 	it("should return the same logger for warn", () => {
 		const logger = getLogger("1.2.3");
 		const anotherLogger = getLogger("1.2.3").warn({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for $warn tagged template literal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").$warn`Hello ${[1, 2, 3]} world!`;
 		expect(logger).toBe(anotherLogger);
 	});
 	it("should return the same logger for error", () => {
@@ -440,9 +506,19 @@ describe("General integration tests", () => {
 		const anotherLogger = getLogger("1.2.3").error({});
 		expect(logger).toBe(anotherLogger);
 	});
+	it("should return the same logger for $error tagged template literal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").$error`Hello ${[1, 2, 3]} world!`;
+		expect(logger).toBe(anotherLogger);
+	});
 	it("should return the same logger for fatal", () => {
 		const logger = getLogger("1.2.3");
 		const anotherLogger = getLogger("1.2.3").fatal({});
+		expect(logger).toBe(anotherLogger);
+	});
+	it("should return the same logger for $fatal tagged template literal", () => {
+		const logger = getLogger("1.2.3");
+		const anotherLogger = getLogger("1.2.3").$fatal`Hello ${[1, 2, 3]} world!`;
 		expect(logger).toBe(anotherLogger);
 	});
 });
