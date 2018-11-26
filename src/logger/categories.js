@@ -81,14 +81,7 @@ const processLogging = (loggerDescription, level, category, ...args) => {
 	return loggerDescription.logger;
 };
 
-const log = (level, category, ...args) => {
-	const loggerDescription = categories[category];
-	const logger = loggerDescription.logger;
-	if (!isLevelEnabled(level, category)) {
-		return logger;
-	}
-	return processLogging(loggerDescription, level, category, ...args);
-};
+const log = (level, category, ...args) => processLogging(categories[category], level, category, ...args);
 
 initRoot();
 
