@@ -25,12 +25,10 @@ const getLoggingFunctionForLevel = level => levelToConsoleTable[level];
 
 const consoleAppender = layoutFunction =>
 	funcSafetyCheck(layoutFunction, `Invalid layout function ${layoutFunction}`, true)(
-		(level, date, category, ...args) => {
-			const loggingFn = getLoggingFunctionForLevel(level);
-			return isFunction(layoutFunction)
-				? loggingFn(...layoutFunction(level, date, category, ...args))
-				: loggingFn(level, date, category, ...args);
-		}
+		isFunction(layoutFunction)
+			? (level, date, category, ...args) =>
+					getLoggingFunctionForLevel(level)(...layoutFunction(level, date, category, ...args))
+			: (level, date, category, ...args) => getLoggingFunctionForLevel(level)(level, date, category, ...args)
 	);
 
 export default consoleAppender;
